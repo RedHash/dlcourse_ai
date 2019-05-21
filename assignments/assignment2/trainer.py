@@ -26,8 +26,8 @@ class Trainer:
     def __init__(self, model, dataset, optim,
                  num_epochs=20,
                  batch_size=20,
-                 learning_rate=1e-3,
-                 learning_rate_decay=1.0):
+                 learning_rate=1e-1,
+                 learning_rate_decay=1):
         """
         Initializes the trainer
 
@@ -90,6 +90,7 @@ class Trainer:
         for epoch in range(self.num_epochs):
             shuffled_indices = np.arange(num_train)
             np.random.shuffle(shuffled_indices)
+
             sections = np.arange(self.batch_size, num_train, self.batch_size)
             batches_indices = np.array_split(shuffled_indices, sections)
 
@@ -100,7 +101,8 @@ class Trainer:
                 # use model to generate loss and gradients for all
                 # the params
 
-                raise Exception("Not implemented!")
+                loss = self.model.compute_loss_and_gradients(self.dataset.train_X[batch_indices], 
+                                                             self.dataset.train_y[batch_indices])
 
                 for param_name, param in self.model.params().items():
                     optimizer = self.optimizers[param_name]
@@ -110,7 +112,7 @@ class Trainer:
 
             if np.not_equal(self.learning_rate_decay, 1.0):
                 # TODO: Implement learning rate decay
-                raise Exception("Not implemented!")
+                self.learning_rate = self.learning_rate * self.learning_rate_decay
 
             ave_loss = np.mean(batch_losses)
 
@@ -119,6 +121,7 @@ class Trainer:
 
             val_accuracy = self.compute_accuracy(self.dataset.val_X,
                                                  self.dataset.val_y)
+
 
             print("Loss: %f, Train accuracy: %f, val accuracy: %f" %
                   (batch_losses[-1], train_accuracy, val_accuracy))

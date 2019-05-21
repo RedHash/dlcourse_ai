@@ -25,8 +25,8 @@ class MomentumSGD:
     Implements Momentum SGD update
     """
     def __init__(self, momentum=0.9):
-        self.momentum = 0.9
-    
+        self.momentum = momentum
+        self.velocity_wasnt_initialized = True
     def update(self, w, d_w, learning_rate):
         """
         Performs Momentum SGD update
@@ -42,4 +42,10 @@ class MomentumSGD:
         # TODO Implement momentum update
         # Hint: you'll need to introduce some variables to remember
         # velocity from the previous updates
-        raise Exception("Not implemented!")        
+        if self.velocity_wasnt_initialized :
+            self.velocity = np.zeros_like(w)
+            self.velocity_wasnt_initialized = False
+
+        self.velocity = self.momentum * self.velocity - learning_rate * d_w
+        
+        return w + self.velocity
